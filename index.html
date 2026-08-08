@@ -1882,6 +1882,29 @@ h2 .hl{
     location.href = 'x-safari-' + full;
   }
 })();
+
+/* Instagram и TikTok объект в страницу не отдают и глушат автоматический переход.
+   Единственное, что они иногда пропускают, — переход по жесту пользователя.
+   Поэтому вторую попытку делаем в момент клика по кнопке оплаты. */
+(function(){
+  const ua = navigator.userAgent || '';
+  const inApp = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|BytedanceWebview|VKAndroidApp|Pinterest/i.test(ua);
+  if(!inApp) return;
+  const android = /android/i.test(ua);
+
+  document.querySelectorAll('a[href*="wayforpay.com"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const pay = link.href;
+      const escape = android
+        ? 'intent://' + pay.replace(/^https?:\/\//, '') + '#Intent;scheme=https;action=android.intent.action.VIEW;end'
+        : 'x-safari-' + pay;
+      e.preventDefault();
+      location.href = escape;
+      // не выпустили — через секунду просто открываем оплату как есть, чтобы не запереть человека
+      setTimeout(() => { location.href = pay; }, 900);
+    });
+  });
+})();
 </script>
 
 <script>
