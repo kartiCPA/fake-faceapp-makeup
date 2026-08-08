@@ -23,6 +23,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;800&family=Golos+Text:wght@400;500;600;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+<script>
+/* Встроенные окна Telegram, Instagram и TikTok ломают 3-D Secure при оплате —
+   сразу выкидываем страницу в системный браузер. Скрипт стоит в <head>,
+   чтобы сработать до отрисовки и не мигать контентом. */
+(function(){
+  var ua = navigator.userAgent || '';
+  if(!/Telegram|Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|BytedanceWebview|VKAndroidApp|Pinterest/i.test(ua)) return;
+  try{
+    if(sessionStorage.getItem('ext')) return;   // одна попытка, иначе можно зациклиться
+    sessionStorage.setItem('ext','1');
+  }catch(e){}
+  var target = location.host + location.pathname + location.search;   // хеш отбрасываем: он ломает intent-ссылку
+  if(/Android/i.test(ua)){
+    location.replace('intent://' + target + '#Intent;scheme=https;end');
+  } else if(/iPhone|iPad|iPod/i.test(ua)){
+    location.replace('x-safari-https://' + target);
+  }
+})();
+</script>
 <style>
 :root{
   --bg:#FFFFFF;          /* светлый тёплый фон */
