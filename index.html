@@ -30,15 +30,28 @@
    чтобы сработать до отрисовки и не мигать контентом. */
 (function(){
   var ua = navigator.userAgent || '';
-  if(!/Telegram|Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|BytedanceWebview|VKAndroidApp|Pinterest/i.test(ua)) return;
+  var iOS = /iPhone|iPad|iPod/i.test(ua);
+  var otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|YaBrowser/i.test(ua);   // Chrome/Firefox на iOS — это уже браузер
+
+  // Приложение назвало себя в User-Agent (Android-Telegram, Instagram, TikTok…)
+  var named = /Telegram|Instagram|FBAN|FBAV|FB_IAB|FBIOS|TikTok|BytedanceWebview|VKAndroidApp|VKClient|Pinterest|Snapchat|Line\//i.test(ua);
+
+  // Telegram на iOS себя НЕ называет: у него обычный WKWebView.
+  // Отличаем по двум признакам — нет токена Safari/ и/или доступен мост webkit.messageHandlers.
+  var iosWebView = iOS && !otherBrowser && !window.navigator.standalone &&
+                   (!/Safari\//i.test(ua) || !!(window.webkit && window.webkit.messageHandlers));
+
+  if(!named && !iosWebView) return;
+
   try{
     if(sessionStorage.getItem('ext')) return;   // одна попытка, иначе можно зациклиться
     sessionStorage.setItem('ext','1');
   }catch(e){}
+
   var target = location.host + location.pathname + location.search;   // хеш отбрасываем: он ломает intent-ссылку
   if(/Android/i.test(ua)){
     location.replace('intent://' + target + '#Intent;scheme=https;end');
-  } else if(/iPhone|iPad|iPod/i.test(ua)){
+  } else if(iOS){
     location.replace('x-safari-https://' + target);
   }
 })();
