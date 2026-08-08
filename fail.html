@@ -123,10 +123,25 @@ h1 .hl{display:inline-block;background:var(--orange);color:var(--ink);padding:2p
   color:var(--ink);text-align:center;margin-top:16px;transform:rotate(-1deg);
 }
 .hint em{font-style:normal;color:var(--orange)}
+/* на телефоне вся страница должна помещаться в один экран без прокрутки */
 @media(max-width:600px){
-  body{padding:26px 18px 40px}
-  .card{padding:26px 20px 24px;border-radius:20px}
-  .btn{padding:19px;border-radius:16px}
+  body{padding:16px 16px 22px;min-height:100dvh}
+  .gatewrap{margin-bottom:18px}
+  .tower{width:min(300px,52vw);padding:26px 0 17px}
+  .battlement{top:-15px;left:8px;right:8px}
+  .battlement i{height:15px}
+  .gate{width:min(200px,66%)}
+  .lock{font-size:42px}
+  .sill{width:min(300px,84%);height:13px;margin-top:-7px}
+  h1{font-size:21px;margin-bottom:9px}
+  h1 .hl{padding:1px 13px;border-radius:13px}
+  .sub{font-size:14.5px;line-height:1.45;margin-bottom:16px}
+  .card{padding:19px 17px 17px;border-radius:20px;box-shadow:6px 6px 0 var(--orange)}
+  .card__label{padding:7px 15px;font-size:10.5px;margin-bottom:11px}
+  .card p{font-size:15px;line-height:1.45;margin-bottom:15px}
+  .btn{padding:15px;border-radius:15px;font-size:14px;box-shadow:5px 5px 0 var(--ink)}
+  .hint{font-size:18px;margin-top:11px}
+  .help{margin-top:9px;font-size:13px;line-height:1.4}
 }
 </style>
 </head>
