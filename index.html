@@ -393,7 +393,7 @@ h2 .hl{
 #audience{padding-top:6px;text-align:center}   /* ближе к строке «доступ после оплаты» */
 #audience h2{margin-left:auto;margin-right:auto}
 .aud-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:32px;
+  display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;
   max-width:900px;margin:0 auto;                /* по центру и на ПК */
 }
 /* ==================== СВИТКИ-РУЛОНЫ ==================== */
@@ -465,13 +465,14 @@ h2 .hl{
 .scroll2.visible .paper .inner>div{transform:rotateX(0)}
 
 .scroll2 h3{
+  position:relative;padding-left:48px;              /* колонка под номер */
   font-family:'Unbounded',sans-serif;font-weight:600;font-size:15px;
   text-transform:uppercase;line-height:1.35;margin-bottom:12px;text-align:left;
 }
-.scroll2 h3 .num{
+.scroll2 h3 .num{                                   /* номер вне потока — строки не рвутся об него */
+  position:absolute;left:0;top:-2px;
   font-family:'Caveat',cursive;font-weight:700;font-size:46px;
   color:var(--orange);line-height:1;
-  display:inline-block;margin-right:10px;vertical-align:-8px;
   transform:rotate(-6deg);
   text-shadow:2px 2px 0 var(--ink);
 }
@@ -1241,7 +1242,7 @@ h2 .hl{
         <div class="tube tube-t"></div>
         <div class="paper">
           <div class="inner"><div>
-            <h3><span class="num">1</span>Тем, кто красится для себя — от новичка до продвинутой</h3>
+            <h3><span class="num">1</span>Тем, кто красится для себя&nbsp;— от новичка до продвинутой</h3>
             <p>Даже если красишься наугад, научишься делать эффектный макияж, который сможет повторить каждая.</p>
           </div></div>
         </div>
