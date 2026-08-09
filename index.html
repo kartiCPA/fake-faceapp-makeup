@@ -71,6 +71,12 @@ src="https://www.facebook.com/tr?id=27689391037419327&ev=PageView&noscript=1"
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-YGSJGV11G3');
+
+  /* просмотр оффера — первая ступень воронки view_item → begin_checkout → purchase */
+  gtag('event', 'view_item', {
+    value: 11, currency: 'USD',
+    items: [{ item_name: 'Real FaceApp Makeup', price: 11, quantity: 1 }]
+  });
 </script>
 <style>
 :root{
