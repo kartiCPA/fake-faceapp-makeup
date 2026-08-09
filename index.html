@@ -23,6 +23,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;800&family=Golos+Text:wght@400;500;600;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+
+<script>
+/* Браузер по умолчанию возвращает на то место, где страницу закрыли.
+   Отключаем это как можно раньше и при загрузке ставим на самый верх. */
+if('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.addEventListener('load', function(){
+  if(location.hash) return;                                  // пришли по якорю — не мешаем
+  window.scrollTo({top:0, left:0, behavior:'instant'});      // instant, иначе сработает плавная прокрутка из CSS
+});
+</script>
 <style>
 :root{
   --bg:#FFFFFF;          /* светлый тёплый фон */
@@ -266,7 +276,7 @@ img{max-width:100%;display:block}
     font-size:11px;padding:12px 18px;
     box-shadow:3px 3px 0 var(--ink);
   }
-  .poke{left:0;top:0;width:112px}
+  .poke{left:-18px;top:0;width:112px}   /* уводим в свободное поле слева от крепости */
   .poke .word{font-size:29px}
   .poke .sub{font-size:15.5px;line-height:1.12;margin-left:5px}
   .poke svg{width:64px;height:52px}
@@ -1261,7 +1271,7 @@ h2 .hl{
         </div>
         <div class="poke" id="poke">
           <span class="word">клац</span>
-          <span class="sub">этот макияж —<br><em>результат курса</em></span>
+          <span class="sub">этот макияж —<br><em>результат<br>практикума</em></span>
           <svg width="96" height="78" viewBox="0 0 96 92" fill="none">
             <path d="M12,6 C6,34 24,58 56,72 C64,75 72,77 80,78" stroke="#333333" stroke-width="2.6" stroke-linecap="round" fill="none"/>
             <path d="M80,78 C74,72 68,69 62,68" stroke="#333333" stroke-width="2.6" stroke-linecap="round" fill="none"/>
