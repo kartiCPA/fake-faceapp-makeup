@@ -70,7 +70,9 @@ src="https://www.facebook.com/tr?id=27689391037419327&ev=PageView&noscript=1"
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-YGSJGV11G3');
+  /* добавь к адресу ?debug=1 — и события пойдут в DebugView, без расширений */
+  gtag('config', 'G-YGSJGV11G3',
+       location.search.indexOf('debug=1') > -1 ? {debug_mode: true} : {});
 
   /* просмотр оффера — первая ступень воронки view_item → begin_checkout → purchase */
   gtag('event', 'view_item', {
