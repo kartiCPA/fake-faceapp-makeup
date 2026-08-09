@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Оплата не прошла — попробуй ещё раз</title>
+<title>Ну всё, королева — доступ открыт</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 
-<!-- Meta Pixel Code — покупка здесь не засчитывается, только просмотр -->
+<!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -21,6 +21,18 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '27689391037419327');
 fbq('track', 'PageView');
+
+/* Покупка — 11 USD. Засчитывается один раз за сессию: страницу можно обновить
+   или вернуться на неё из истории, и без защиты Meta посчитала бы это новой продажей. */
+(function(){
+  var fired = false;
+  try{ fired = !!sessionStorage.getItem('purchaseSent'); }catch(e){}
+  if(fired) return;
+  try{ sessionStorage.setItem('purchaseSent','1'); }catch(e){}
+  fbq('track', 'Purchase',
+      {value: 11, currency: 'USD', content_name: 'Real FaceApp Makeup'},
+      {eventID: 'pur-' + Date.now() + '-' + Math.random().toString(36).slice(2,8)});
+})();
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=27689391037419327&ev=PageView&noscript=1"
@@ -43,6 +55,19 @@ src="https://www.facebook.com/tr?id=27689391037419327&ev=PageView&noscript=1"
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-YGSJGV11G3');
+
+  /* покупка — 11 USD, с той же защитой от повтора, что и у пикселя */
+  (function(){
+    var gaFired = false;
+    try{ gaFired = !!sessionStorage.getItem('gaPurchaseSent'); }catch(e){}
+    if(gaFired) return;
+    try{ sessionStorage.setItem('gaPurchaseSent','1'); }catch(e){}
+    gtag('event', 'purchase', {
+      transaction_id: 'ord-' + Date.now() + '-' + Math.random().toString(36).slice(2,8),
+      value: 11, currency: 'USD',
+      items: [{ item_name: 'Real FaceApp Makeup', price: 11, quantity: 1 }]
+    });
+  })();
 </script>
 <style>
 :root{--bg:#FFFFFF;--ink:#333333;--orange:#D88C9A;--muted:#8a8186}
@@ -55,7 +80,25 @@ body{
 }
 .ty{max-width:620px;width:100%;text-align:center;position:relative}
 
-/* ---------- башня с воротами ---------- */
+/* ---------- искры вокруг ---------- */
+.spark{
+  position:absolute;color:var(--orange);font-size:20px;pointer-events:none;
+  opacity:0;animation:float 4.5s ease-in-out infinite;
+}
+.spark:nth-child(1){left:-4%;top:16%;animation-delay:.2s}
+.spark:nth-child(2){right:-2%;top:9%;font-size:15px;animation-delay:1.1s}
+.spark:nth-child(3){left:6%;top:52%;font-size:14px;animation-delay:2.1s}
+.spark:nth-child(4){right:4%;top:44%;animation-delay:1.6s}
+.spark:nth-child(5){left:16%;top:2%;font-size:13px;animation-delay:2.8s}
+.spark:nth-child(6){right:18%;top:60%;font-size:16px;animation-delay:.7s}
+@keyframes float{
+  0%{opacity:0;transform:translateY(6px) scale(.7) rotate(0)}
+  25%{opacity:1;transform:translateY(-4px) scale(1) rotate(20deg)}
+  60%{opacity:1;transform:translateY(-12px) scale(.95) rotate(-10deg)}
+  100%{opacity:0;transform:translateY(-22px) scale(.7) rotate(15deg)}
+}
+
+/* ---------- врата замка ---------- */
 .gatewrap{display:flex;flex-direction:column;align-items:center;margin-bottom:34px}
 .tower{
   position:relative;
@@ -73,10 +116,22 @@ body{
   position:relative;overflow:hidden;
   width:min(200px,62%);aspect-ratio:3/3.6;
   border:2px solid var(--ink);border-radius:999px 999px 0 0;
-  background:radial-gradient(circle at 50% 40%, #6d5f63 0%, #4a4044 60%, #3a3235 100%);
+  background:
+    repeating-conic-gradient(from 0deg at 50% 62%, rgba(216,140,154,.22) 0deg 7deg, transparent 7deg 16deg),
+    radial-gradient(circle at 50% 58%, #FFFFFF 0%, #FBEFF2 55%, #F1DCE2 100%);
   box-shadow:0 0 0 7px var(--bg), 0 0 0 9px var(--ink);
 }
-/* створки: открыты, потом захлопываются */
+.crown{
+  position:absolute;left:50%;top:52%;
+  transform:translate(-50%,-50%) scale(0) rotate(-18deg);
+  font-size:clamp(50px,13vw,72px);line-height:1;
+  filter:drop-shadow(2px 4px 0 rgba(51,51,51,.3));
+}
+.gate.open .crown{
+  animation:crownIn .7s cubic-bezier(.34,1.6,.5,1) .85s forwards;
+}
+@keyframes crownIn{to{transform:translate(-50%,-50%) scale(1) rotate(-8deg)}}
+/* створки */
 .doors{position:absolute;inset:0;z-index:2;perspective:900px}
 .door{
   position:absolute;top:0;bottom:0;width:50.5%;
@@ -84,47 +139,28 @@ body{
     repeating-linear-gradient(90deg, transparent 0 20px, rgba(51,51,51,.16) 20px 22px),
     linear-gradient(180deg,#F0C3CD,#E4A8B6);
   border:2px solid var(--ink);backface-visibility:hidden;
-  transition:transform .55s cubic-bezier(.5,0,.75,.2);
+  transition:transform 1s cubic-bezier(.65,.05,.3,1);
 }
 .door::after{content:"";position:absolute;top:50%;width:9px;height:9px;border-radius:50%;background:var(--ink);transform:translateY(-50%)}
-.door--l{left:0;transform-origin:left center;border-radius:230px 0 0 0;transform:rotateY(-108deg)}
+.door--l{left:0;transform-origin:left center;border-radius:230px 0 0 0}
 .door--l::after{right:9px}
-.door--r{right:0;transform-origin:right center;border-radius:0 230px 0 0;transform:rotateY(108deg);transition-delay:.06s}
+.door--r{right:0;transform-origin:right center;border-radius:0 230px 0 0;transition-delay:.1s}
 .door--r::after{left:9px}
-.gate.shut .door--l,.gate.shut .door--r{transform:rotateY(0)}
-
-/* замок на воротах */
-.lock{
-  position:absolute;z-index:4;left:50%;top:56%;
-  transform:translate(-50%,-50%) translateY(-150px) rotate(-14deg);
-  font-size:clamp(46px,12vw,64px);line-height:1;opacity:0;
-  filter:drop-shadow(3px 4px 0 rgba(51,51,51,.35));
-}
-.gate.shut .lock{animation:lockDrop .55s cubic-bezier(.5,0,.8,.3) .6s forwards}
-@keyframes lockDrop{
-  0%{opacity:0;transform:translate(-50%,-50%) translateY(-150px) rotate(-14deg)}
-  70%{opacity:1;transform:translate(-50%,-50%) translateY(6px) rotate(4deg)}
-  100%{opacity:1;transform:translate(-50%,-50%) translateY(0) rotate(-4deg)}
-}
-/* створки вздрагивают от удара замка */
-.gate.shut .doors{animation:clank .34s ease-out 1.14s}
-@keyframes clank{
-  0%,100%{transform:translateX(0)}
-  25%{transform:translateX(-3px)}
-  60%{transform:translateX(2px)}
-}
+.gate.open .door--l{transform:rotateY(-108deg)}
+.gate.open .door--r{transform:rotateY(108deg)}
 .sill{width:min(300px,80%);height:18px;background:var(--ink);border-radius:8px;margin-top:-9px;position:relative;z-index:3}
 
 /* ---------- текст ---------- */
 h1{
   font-family:'Unbounded',sans-serif;font-weight:800;text-transform:uppercase;
-  font-size:clamp(24px,5vw,38px);line-height:1.12;letter-spacing:-.01em;
+  font-size:clamp(26px,5.4vw,42px);line-height:1.1;letter-spacing:-.01em;
   margin-bottom:14px;
 }
 h1 .hl{display:inline-block;background:var(--orange);color:var(--ink);padding:2px 16px;border-radius:16px;transform:rotate(-1.5deg)}
 .sub{font-size:17px;color:var(--muted);font-weight:500;margin-bottom:30px}
 .sub b{color:var(--ink)}
 
+/* ---------- карточка следующего шага ---------- */
 .card{
   background:var(--bg);border:2px solid var(--ink);border-radius:26px;
   box-shadow:8px 8px 0 var(--orange);
@@ -149,11 +185,6 @@ h1 .hl{display:inline-block;background:var(--orange);color:var(--ink);padding:2p
 }
 .btn:hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
 .btn:active{transform:translate(5px,5px);box-shadow:1px 1px 0 var(--ink)}
-.card p.hint{margin-bottom:0}
-.help{
-  margin:14px 0 0;text-align:center;font-size:14.5px;color:var(--muted);
-}
-.help a{color:var(--ink);text-decoration-color:var(--orange);text-underline-offset:3px}
 .hint{
   font-family:'Caveat',cursive;font-weight:600;font-size:22px;
   color:var(--ink);text-align:center;margin-top:16px;transform:rotate(-1deg);
@@ -169,37 +200,39 @@ h1 .hl{display:inline-block;background:var(--orange);color:var(--ink);padding:2p
 <body>
 
 <main class="ty">
+  <span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span>
+  <span class="spark">✦</span><span class="spark">✦</span><span class="spark">✦</span>
 
   <div class="gatewrap">
     <div class="tower">
       <div class="battlement"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="gate" id="gate">
+        <span class="crown">👑</span>
         <div class="doors">
           <div class="door door--l"></div>
           <div class="door door--r"></div>
         </div>
-        <span class="lock">🔒</span>
       </div>
       <div class="sill"></div>
     </div>
   </div>
 
-  <h1>Упс, произошла <span class="hl">ошибка</span></h1>
-  <p class="sub">Оплата не прошла — <b>деньги остались у тебя</b>. Обычно это банк не пропустил платёж или подвела связь.</p>
+  <h1>Ну всё, <span class="hl">королева</span></h1>
+  <p class="sub">Оплата прошла — <b>доступ твой</b>. Врата открыты.</p>
 
   <div class="card">
-    <span class="card__label"><span class="sp">✦</span> Что делать</span>
-    <p>Просто <b>попробуй ещё раз</b> — чаще всего со второй попытки всё проходит. Если банк всё равно отклоняет — попробуй другую карту или свяжись с банком.</p>
-    <a class="btn" href="https://secure.wayforpay.com/button/b868961aa0dda" id="retry">Попробовать ещё раз →</a>
-    <p class="hint">Замок открывается <em>с той стороны</em> ✨</p>
-    <p class="help">Всё равно не выходит? <a href="https://t.me/zavedenkomua" target="_blank" rel="noopener">Напиши мне в телеграм</a> — попробуем по-другому</p>
+    <span class="card__label"><span class="sp">✦</span> Следующий шаг</span>
+    <p>Присоединяйся к моему боту — <b>всё обучение будет там</b>: уроки, бонус и всё, что понадобится по пути.</p>
+    <!-- ЗАМЕНИТЬ на ссылку своего бота: https://t.me/имя_бота -->
+    <a class="btn" href="#" id="joinbtn">Присоединиться →</a>
+    <p class="hint">Совсем скоро <em>стартуем</em> ✨</p>
   </div>
 </main>
 
 <script>
-// ворота захлопываются, следом падает замок и створки вздрагивают
+// врата распахиваются сами, корона появляется следом
 window.addEventListener('load', () => {
-  setTimeout(() => document.getElementById('gate').classList.add('shut'), 380);
+  setTimeout(() => document.getElementById('gate').classList.add('open'), 450);
 });
 </script>
 
