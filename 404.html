@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>404 — сторінку не знайдено</title>
+<title>404 — страница не найдена</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -151,7 +151,7 @@ h1 .hl{display:inline-block;background:var(--orange);color:var(--ink);padding:2p
       <div class="battlement"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="gate" id="gate">
         <span class="code">404</span>
-        <span class="dust" id="t-dust">тут порожньо</span>
+        <span class="dust">тут пусто</span>
         <div class="doors">
           <div class="door door--l"></div>
           <div class="door door--r"></div>
@@ -161,35 +161,18 @@ h1 .hl{display:inline-block;background:var(--orange);color:var(--ink);padding:2p
     </div>
   </div>
 
-  <h1 id="t-h1">Ой, сторінку <span class="hl">не знайдено</span></h1>
-  <p class="sub" id="t-sub">Такої кімнати в замку немає — <b>посилання застаріло або в адресі помилка</b>.</p>
+  <h1>Ой, страница <span class="hl">не найдена</span></h1>
+  <p class="sub">Такой комнаты в замке нет — <b>ссылка устарела или в адресе опечатка</b>.</p>
 
   <div class="card">
-    <span class="card__label"><span class="sp">✦</span> <span id="t-label">Куди далі</span></span>
-    <p id="t-text">Усе цікаве на головній: програма практикуму, роботи, відгуки та умови.</p>
-    <a class="btn" id="t-btn" href="/ua">Повернутися на головну →</a>
-    <p class="hint" id="t-hint">Там точно <em>відчинено</em> ✨</p>
+    <span class="card__label"><span class="sp">✦</span> Куда дальше</span>
+    <p>Всё интересное на главной: программа практикума, работы, отзывы и условия.</p>
+    <a class="btn" href="/">Вернуться на главную →</a>
+    <p class="hint">Там точно <em>открыто</em> ✨</p>
   </div>
 </main>
 
 <script>
-// страница 404 одна на оба рынка: по умолчанию украинская,
-// но если битый адрес (или страница, откуда пришли) лежит в /eu — показываем русскую
-(function(){
-  const eu = /^\/eu(\/|$)/.test(location.pathname) || /\/eu(\/|$|\?)/.test(document.referrer || '');
-  if(!eu) return;
-  document.documentElement.lang = 'ru';
-  document.title = '404 — страница не найдена';
-  document.getElementById('t-dust').textContent  = 'тут пусто';
-  document.getElementById('t-h1').innerHTML      = 'Ой, страница <span class="hl">не найдена</span>';
-  document.getElementById('t-sub').innerHTML     = 'Такой комнаты в замке нет — <b>ссылка устарела или в адресе опечатка</b>.';
-  document.getElementById('t-label').textContent = 'Куда дальше';
-  document.getElementById('t-text').textContent  = 'Всё интересное на главной: программа практикума, работы, отзывы и условия.';
-  document.getElementById('t-btn').textContent   = 'Вернуться на главную →';
-  document.getElementById('t-btn').href          = '/eu';
-  document.getElementById('t-hint').innerHTML    = 'Там точно <em>открыто</em> ✨';
-})();
-
 // створки распахиваются, за ними — пустой проём с номером ошибки
 window.addEventListener('load', () => {
   setTimeout(() => document.getElementById('gate').classList.add('open'), 420);
