@@ -58,14 +58,21 @@ src="https://www.facebook.com/tr?id=27689391037419327&ev=PageView&noscript=1"
   gtag('config', 'G-YGSJGV11G3',
        location.search.indexOf('debug=1') > -1 ? {debug_mode: true} : {});
 
-  /* покупка — 11 USD, с той же защитой от повтора, что и у пикселя */
+  /* Покупка — 11 USD. Номер заказа выдаётся один раз и лежит в localStorage:
+     он переживает закрытие браузера, поэтому возврат на эту страницу через день
+     (из истории или по ссылке из бота) уже не создаёт вторую продажу.
+     Раньше флаг хранился в sessionStorage и стирался вместе со вкладкой —
+     дубли падали в новый сеанс без рекламы, отсюда покупки в (not set).
+     Тот же номер уходит в transaction_id: если событие всё же повторится,
+     GA4 склеит его с первым вместо того, чтобы посчитать новый заказ. */
   (function(){
-    var gaFired = false;
-    try{ gaFired = !!sessionStorage.getItem('gaPurchaseSent'); }catch(e){}
-    if(gaFired) return;
-    try{ sessionStorage.setItem('gaPurchaseSent','1'); }catch(e){}
+    var KEY = 'gaPurchaseTid', tid = null;
+    try{ tid = localStorage.getItem(KEY); }catch(e){}
+    if(tid) return;
+    tid = 'ord-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+    try{ localStorage.setItem(KEY, tid); }catch(e){}
     gtag('event', 'purchase', {
-      transaction_id: 'ord-' + Date.now() + '-' + Math.random().toString(36).slice(2,8),
+      transaction_id: tid,
       value: 11, currency: 'USD',
       items: [{ item_name: 'Real FaceApp Makeup', price: 11, quantity: 1 }]
     });
