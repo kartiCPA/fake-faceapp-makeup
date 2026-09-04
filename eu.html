@@ -807,7 +807,15 @@ h2 .hl{
   text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
   margin-bottom:16px;
 }
-.cta-card .prices{display:flex;align-items:baseline;gap:16px;margin-bottom:24px}
+.cta-card .prices{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+/* цена и валюта не разрываются: «9,90 EUR» ломалось на две строки.
+   Если пара не влезает в ширину — переносится целая цена, а не её половина */
+.price__old,.price__new{white-space:nowrap}
+@media(max-width:900px){
+  .cta-card .prices{gap:12px}
+  .cta-card .price__new{font-size:clamp(24px,7vw,32px)}
+  .cta-card .price__old{font-size:18px}
+}
 .cta-card .prices .price__new{color:var(--ink)}
 .cta-card .btn{width:100%;margin-bottom:20px;padding:24px}
 .cta-bon{
