@@ -1453,7 +1453,8 @@ body{padding-bottom:82px}
 .hero2pic__frame{
   height:100%;
   overflow:hidden;border:2px solid var(--ink);border-radius:24px;
-  background:linear-gradient(180deg,#FBF3F5,#EDD8DF);
+  /* тот же цвет, что подложен под вырезанное фото — стыка не видно */
+  background:#F4E6EB;
   box-shadow:8px 8px 0 var(--orange);transform:rotate(-1.2deg);
 }
 .hero2pic__frame img{width:100%;height:100%;object-fit:cover;object-position:50% 4%;display:block}
@@ -1468,12 +1469,15 @@ body{padding-bottom:82px}
   letter-spacing:.03em;padding:5px 12px;border-radius:100px;
 }
 .author{
-  position:absolute;left:-10px;bottom:-18px;
-  display:flex;align-items:center;gap:9px;
-  background:var(--bg);border:2px solid var(--ink);border-radius:16px;
-  padding:7px 12px 7px 7px;box-shadow:4px 4px 0 var(--ink);
-  transform:rotate(1.4deg);max-width:96%;
+  position:absolute;left:-10px;bottom:-16px;
+  display:flex;align-items:center;
+  background:var(--bg);border:2px solid var(--ink);border-radius:14px;
+  padding:7px 13px;box-shadow:4px 4px 0 var(--ink);
+  transform:rotate(1.4deg);
 }
+/* имя держим в одну строку: при переносе плашка раздувалась вдвое
+   и половину её занимала пустота */
+.author__txt b,.author__txt i{white-space:nowrap}
 .author__ava{
   width:42px;height:42px;flex:none;border-radius:50%;overflow:hidden;
   border:2px solid var(--ink);background:linear-gradient(180deg,#FBF3F5,#EDD8DF);
@@ -1518,7 +1522,7 @@ body{padding-bottom:82px}
   .hero .cell--price{box-shadow:6px 6px 0 var(--orange)}
   .hero2pic{grid-column:2;grid-row:2/5;margin:0}
   .hero2pic__frame{box-shadow:6px 6px 0 var(--orange);border-radius:20px}
-  .author{left:-6px;bottom:-14px;padding:5px 9px 5px 5px;gap:7px;border-radius:13px}
+  .author{left:-6px;bottom:-13px;padding:6px 11px;border-radius:12px;box-shadow:3px 3px 0 var(--ink)}
   .author__ava{width:34px;height:34px}
   .author__txt b{font-size:10px}
   .author__txt i{font-size:9.5px}
@@ -1683,15 +1687,14 @@ body{padding-bottom:82px}
       </div>    </div>
 
     <div class="hero2pic">
-      <span class="hero2pic__tag">результат практикума</span>
+      <span class="hero2pic__tag">автор практикума</span>
       <div class="hero2pic__frame">
-        <img src="/img/work-2.png" alt="Результат практикума — нюдовый макияж">
+        <img src="/img/hero-author.jpg" alt="Владлена Заведенко — визажист, автор практикума">
       </div>
       <div class="author">
-        <span class="author__ava"><img src="/img/vlada.png" alt="Владлена Заведенко"></span>
         <span class="author__txt">
           <b>Владлена Заведенко</b>
-          <i>визажист · автор практикума</i>
+          <i>визажист</i>
         </span>
       </div>
     </div>
