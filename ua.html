@@ -1296,8 +1296,352 @@ h2 .hl{
   .price__timer b{font-size:14px}
 }
 </style>
+<style>
+/* ================= ФИНАЛЬНАЯ ВЕРСИЯ ПЕРВОГО ЭКРАНА ================= */
+
+/* --- бегущая строка --- */
+.ticker{
+  position:sticky;top:0;z-index:90;
+  background:var(--orange);border-bottom:2px solid var(--ink);
+  overflow:hidden;height:34px;display:flex;align-items:center;
+}
+.ticker__row{display:flex;width:max-content;animation:tickmove 30s linear infinite}
+.tk__set{display:flex;align-items:center;flex:none}
+.tk__set b{
+  font-family:'Unbounded',sans-serif;font-weight:600;font-size:11px;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--ink);white-space:nowrap;
+}
+.tk__set i{font-style:normal;color:#fff;margin:0 18px;font-size:11px}
+@keyframes tickmove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.ticker__row{animation:none}}
+.topbar{top:34px}
+
+/* --- шапка уехала вниз --- */
+.topbar{display:none}
+/* панель прячется, пока на экране своя кнопка в первом экране —
+   иначе «Получить доступ» висит дважды одновременно */
+.stickycta{
+  position:fixed;left:0;right:0;bottom:0;z-index:95;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px max(16px,calc((100vw - 1120px)/2));
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-top:2px solid var(--ink);
+  transform:translateY(115%);opacity:0;pointer-events:none;
+  transition:transform .3s ease, opacity .3s ease;
+}
+.stickycta.is-on{transform:none;opacity:1;pointer-events:auto}
+.stickycta .logo{flex:none}
+.stickycta__btn{
+  display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+  background:var(--orange);color:var(--ink);
+  font-family:'Unbounded',sans-serif;font-weight:600;font-size:14px;
+  text-transform:uppercase;letter-spacing:.02em;
+  border:2px solid var(--ink);border-radius:100px;padding:12px 26px;
+  box-shadow:4px 4px 0 var(--ink);
+  animation:ctapulse 2.8s ease-in-out infinite;
+}
+.stickycta__btn b{
+  background:var(--ink);color:var(--orange);
+  font-size:12px;font-weight:700;padding:3px 9px;border-radius:100px;
+}
+/* пульсация лёгкая: сильнее — и кнопка начинает раздражать при долгом чтении */
+@keyframes ctapulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.038)}
+}
+@media(prefers-reduced-motion:reduce){.stickycta__btn{animation:none}}
+body{padding-bottom:82px}
+
+/* --- первый экран --- */
+/* хвост заголовка едет одним куском, чтобы FaceApp не оставался один на строке */
+.h1end{white-space:nowrap}
+.hero{min-height:0;padding:14px 0 30px;align-items:stretch}
+/* Высоту экрана здесь не растягиваем. Раньше стояли min-height и центрирование,
+   и когда содержимое короче экрана, свободное место разъезжалось сверху и снизу
+   огромными провалами. Первый экран держится за счёт компактных размеров,
+   а не за счёт распорки. */
+.fold{display:flex;flex-direction:column}
+
+/* Бонус и места — одна строка вместо двух блоков. Рамка с отступами и полоска
+   заполнения занимали втрое больше высоты при том же смысле. */
+.price__extra{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;align-self:stretch;
+  margin-top:9px;font-size:12px;font-weight:600;color:#D3C8CB;line-height:1.3;
+}
+.price__extra .bn{flex:1 1 auto;min-width:0}
+.price__extra .bn b{color:#fff;font-weight:700}
+.price__extra .bn em{font-style:normal;color:var(--orange);font-weight:700}
+.castle .bonus-card{display:none}
+
+/* места кольцом: заполнение показывает занятое, цвет — насколько всё плохо */
+.price__timer{flex-wrap:wrap;row-gap:6px}
+.seatbox{
+  display:inline-flex;align-items:center;gap:7px;margin-left:14px;
+  font-size:11px;font-weight:600;color:#C4B9BD;
+}
+.seatring{width:20px;height:20px;flex:none;transform:rotate(-90deg)}
+.sr-bg{fill:none;stroke:rgba(255,255,255,.18);stroke-width:4}
+.sr-fg{
+  fill:none;stroke:#E8B84B;stroke-width:4;stroke-linecap:round;
+  transition:stroke-dashoffset .7s ease, stroke .4s ease;
+}
+.seatnum{color:#E8B84B;font-weight:700;font-size:12.5px}
+.seatbox.is-warn .sr-fg,.seatbox.is-warn .seatnum{stroke:#E8873B;color:#E8873B}
+.seatbox.is-hot  .sr-fg,.seatbox.is-hot  .seatnum{stroke:#E0524A;color:#E0524A}
+/* тот же счётчик на светлой панели снизу — там нужен тёмный текст */
+.seatbox--bar{margin-left:0;color:var(--ink);font-size:12px}
+.seatbox--bar .sr-bg{stroke:rgba(51,51,51,.16)}
+.seatbox--bar .seatnum{font-size:13.5px}
+
+/* старая и новая цена в одну строку — отдельным этажом старая съедала высоту.
+   Черта тонкая: толстая палка забивала цифры */
+.price__row{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
+.price__old{font-size:22px;font-weight:600;color:#BFB3A6;text-decoration-thickness:2px}
+
+/* уведомление о присоединившихся */
+/* пока нижней панели нет, уведомление прижимается к краю экрана,
+   а когда панель выехала — поднимается над ней */
+.joinpop{
+  position:fixed;left:16px;bottom:18px;z-index:94;
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);border:2px solid var(--ink);border-radius:16px;
+  padding:9px 15px 9px 9px;box-shadow:5px 5px 0 var(--ink);
+  font-size:12.5px;font-weight:600;color:var(--ink);
+  opacity:0;transform:translateY(10px);pointer-events:none;
+  transition:opacity .35s ease, transform .35s ease, bottom .3s ease;
+  max-width:calc(100vw - 32px);
+}
+/* панель идёт в разметке раньше уведомления, поэтому её состояние
+   можно поймать соседним селектором — без лишнего кода в скрипте */
+.stickycta.is-on ~ .joinpop{bottom:96px}
+.joinpop.is-on{opacity:1;transform:translateY(0);pointer-events:auto}
+/* крестик — значком в углу карточки, а не в строке рядом с именем */
+.joinpop__x{
+  position:absolute;top:-10px;right:-10px;padding:0;
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--ink);background:var(--bg);
+  color:var(--ink);font:inherit;font-size:14px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:2px 2px 0 var(--ink);
+}
+@media(hover:hover){.joinpop__x:hover{background:var(--orange)}}
+.joinpop__ava{
+  width:32px;height:32px;flex:none;border-radius:50%;
+  background:var(--orange);border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-weight:700;font-size:13px;color:var(--ink);
+}
+.joinpop b{font-weight:800}
+@media(max-width:600px){
+  .joinpop{left:12px;right:12px;bottom:14px;font-size:11.5px;padding:8px 13px 8px 8px}
+  .stickycta.is-on ~ .joinpop{bottom:88px}
+  .joinpop__ava{width:28px;height:28px;font-size:12px}
+}
+
+/* ярлык вынесен из рамки (внутри его резал overflow), но лежит в абсолюте —
+   иначе он занимал бы высоту и опускал фото, оставляя пустоту сверху */
+.hero2pic{position:relative}
+.hero2pic__frame{
+  height:100%;
+  overflow:hidden;border:2px solid var(--ink);border-radius:24px;
+  background:linear-gradient(180deg,#FBF3F5,#EDD8DF);
+  box-shadow:8px 8px 0 var(--orange);transform:rotate(-1.2deg);
+}
+.hero2pic__frame img{width:100%;height:100%;object-fit:cover;object-position:50% 4%;display:block}
+/* подпись к кадру: строчными и приглушённо, чтобы читалась как ярлык
+   на фотографии, а не как ещё один заголовок рядом с оффером */
+.hero2pic__tag{
+  position:absolute;z-index:3;top:-11px;left:14px;white-space:nowrap;
+  transform:rotate(-2deg);
+  background:rgba(24,16,19,.62);color:#fff;
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);
+  font-family:'Golos Text',sans-serif;font-weight:600;font-size:11px;
+  letter-spacing:.03em;padding:5px 12px;border-radius:100px;
+}
+.author{
+  position:absolute;left:-10px;bottom:-18px;
+  display:flex;align-items:center;gap:9px;
+  background:var(--bg);border:2px solid var(--ink);border-radius:16px;
+  padding:7px 12px 7px 7px;box-shadow:4px 4px 0 var(--ink);
+  transform:rotate(1.4deg);max-width:96%;
+}
+.author__ava{
+  width:42px;height:42px;flex:none;border-radius:50%;overflow:hidden;
+  border:2px solid var(--ink);background:linear-gradient(180deg,#FBF3F5,#EDD8DF);
+}
+/* макушка на исходнике начинается примерно на 14% высоты — без сдвига
+   треть кружка занимал пустой фон над головой */
+.author__ava img{width:100%;height:100%;object-fit:cover;object-position:50% 17%;display:block}
+.author__txt{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.author__txt b{font-family:'Unbounded',sans-serif;font-weight:600;font-size:11.5px}
+.author__txt i{font-style:normal;font-size:11px;color:var(--orange);font-weight:600}
+
+@media(min-width:901px){
+  .fold{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,430px);
+    column-gap:56px;align-items:start;align-content:start;
+  }
+  .hero h1{
+    grid-column:1;grid-row:1;max-width:none;margin-bottom:22px;
+    font-size:clamp(28px,2.7vw,44px);   /* в колонке прежний кегль ломался на шесть строк */
+  }
+  .hero__main{grid-column:1;grid-row:2;display:grid;grid-template-columns:1fr;gap:12px}
+  /* у кнопки в базовых стилях grid-column:1/3 от старой трёхколоночной сетки —
+     в одной колонке она добавляла фантомную вторую и всё расползалось */
+  .hero .btn{grid-column:1;padding:22px;border-radius:20px;font-size:17px}
+  .hero .cell--price{grid-column:1}
+  .hero__bottom{grid-column:1;grid-row:3;justify-content:flex-start;margin-top:14px}
+  .hero2pic{grid-column:2;grid-row:1/4;align-self:center;aspect-ratio:4/5}
+  .hero .cell{padding:16px 22px;font-size:15.5px;box-shadow:5px 5px 0 var(--ink)}
+  .author__txt b{font-size:13px}.author__txt i{font-size:12.5px}
+  .author__ava{width:56px;height:56px}
+  .hero .castle{margin-top:60px}
+}
+
+@media(max-width:900px){
+  .fold{display:grid;grid-template-columns:1fr 39%;gap:8px 12px;align-content:start}
+  .hero__main{display:contents}
+  /* отступ под заголовком: логотип FaceApp в конце строки почти касался
+     ярлыка «результат практикума», который выступает над рамкой фото */
+  .hero h1{grid-column:1/-1;font-size:clamp(20px,5.5vw,29px);line-height:1.1;margin:0 0 15px}
+  .hero .cell{grid-column:1;padding:9px 12px;font-size:12.5px;border-radius:14px;box-shadow:4px 4px 0 var(--ink);gap:8px}
+  /* правило выше перебивало розовую тень карточки цены — возвращаем объём */
+  .hero .cell--price{box-shadow:6px 6px 0 var(--orange)}
+  .hero2pic{grid-column:2;grid-row:2/5;margin:0}
+  .hero2pic__frame{box-shadow:6px 6px 0 var(--orange);border-radius:20px}
+  .author{left:-6px;bottom:-14px;padding:5px 9px 5px 5px;gap:7px;border-radius:13px}
+  .author__ava{width:34px;height:34px}
+  .author__txt b{font-size:10px}
+  .author__txt i{font-size:9.5px}
+  .hero .cell--price{grid-column:1/-1;order:1;margin-top:16px;padding:13px 16px}
+  .hero .btn{grid-column:1/-1;order:2;padding:14px;font-size:14.5px}
+  .hero__bottom{grid-column:1/-1;order:3;margin-top:10px;font-size:12.5px}
+  .hero .castle{margin-top:32px}
+  .price__old{font-size:19px;text-decoration-thickness:2px}
+  .price__row{gap:11px}
+  .price__new{font-size:clamp(28px,8vw,38px)}
+  .price__note,.price__timer{font-size:11.5px}
+
+  .ticker{height:30px}
+  .tk__set b{font-size:10px}
+  .tk__set i{margin:0 13px}
+  .stickycta{padding:8px 14px;gap:10px}
+  .stickycta .logo{gap:9px}
+  .stickycta .logo__mark{width:36px;height:36px;font-size:17px;border-radius:11px}
+  .stickycta .logo__text{font-size:9.5px}
+  .stickycta__btn{flex:1;justify-content:center;padding:12px 14px;font-size:12.5px;gap:7px}
+  .stickycta__btn b{font-size:11px;padding:3px 7px}
+  body{padding-bottom:74px}
+}
+@media(max-width:400px){
+  .stickycta .logo__text{display:none}     /* совсем узкие экраны: оставляем только знак */
+}
+@media(max-width:900px) and (max-height:720px){
+  .hero h1{font-size:clamp(18px,5.1vw,26px);margin-bottom:10px}
+  .hero .cell{padding:7px 10px;font-size:11.5px;border-radius:12px;box-shadow:3px 3px 0 var(--ink)}
+  .hero .cell--price{margin-top:9px;padding:10px 13px;gap:3px;box-shadow:5px 5px 0 var(--orange)}
+  .price__new{font-size:clamp(24px,7vw,31px)}
+  .price__old{font-size:17px}
+  .price__row{gap:9px}
+  .price__note{display:none}
+  .price__timer{font-size:10.5px;margin-top:7px;padding-top:8px}
+  .price__timer b{font-size:14px}
+  .price__extra{margin-top:7px;font-size:10.8px;gap:7px}
+  .seatbox{margin-left:0;font-size:10px}
+  .seatring{width:17px;height:17px}
+  .seatnum{font-size:11.5px}
+  .seatbox--bar{font-size:11px}
+  .seatbox--bar .seatnum{font-size:12.5px}
+  .hero2pic__tag{font-size:9.5px;padding:4px 10px;left:9px;top:-9px}
+  .hero .btn{padding:11px;font-size:13.5px}
+  .author__ava{width:30px;height:30px}
+}
+</style>
+<style>
+/* ===== ДО / ПОСЛЕ ===== */
+/* Снимки заранее совмещены по глазам, поэтому обе картинки лежат стопкой
+   и «до» просто подрезается по вертикали шторкой — лицо не смещается. */
+.ba{position:absolute;inset:0;overflow:hidden;touch-action:none;cursor:ew-resize;z-index:1}
+.window .ba__img{
+  position:absolute;left:0;top:0;transform:none;
+  width:100%;height:100%;object-fit:cover;display:block;
+  /* на компьютере браузер начинает тащить саму картинку, и события мыши
+     обрываются — поэтому изображения не участвуют в наведении и не таскаются */
+  pointer-events:none;user-select:none;-webkit-user-drag:none;
+}
+.ba{user-select:none}
+.ba__do{clip-path:inset(0 50% 0 0)}
+.ba__line{
+  position:absolute;top:0;bottom:0;left:50%;width:3px;
+  background:#fff;box-shadow:0 0 0 1px rgba(51,51,51,.35);
+  transform:translateX(-50%);pointer-events:none;
+}
+.ba__knob{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:42px;height:42px;border-radius:50%;
+  background:#fff;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);
+  display:flex;align-items:center;justify-content:center;
+}
+.ba__knob::before{
+  content:"‹ ›";font-family:'Unbounded',sans-serif;font-weight:700;
+  font-size:13px;color:var(--ink);letter-spacing:-2px;
+}
+.ba__tag{
+  position:absolute;bottom:12px;z-index:2;pointer-events:none;
+  background:rgba(24,16,19,.6);color:#fff;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  font-family:'Golos Text',sans-serif;font-weight:600;font-size:10.5px;
+  padding:4px 11px;border-radius:100px;
+}
+.ba__tag--l{left:12px}
+.ba__tag--r{right:12px}
+/* створки после открытия не должны перехватывать перетаскивание */
+.shutters{pointer-events:none}
+/* ===== БЕЗ ЗАМКА: одно окно ===== */
+.hero .fort{filter:none;margin-top:14px}
+.hero .wall,.hero .battlement,.hero .sill{display:none}
+.hero .tower{border:none;background:none;width:auto;padding:0;border-radius:0}
+.hero .winwrap{width:min(330px,74vw)}
+.hero .window{
+  aspect-ratio:3/3.7;border-radius:26px;
+  box-shadow:0 0 0 7px var(--bg), 0 0 0 9px var(--ink), 10px 10px 0 rgba(216,140,154,.45);
+}
+/* створки убраны: окно сразу показывает кадр, без открывания */
+.hero .shutters{display:none}
+.hero-crown{display:none}
+/* рукописную пометку сняли — её роль взял заголовок над окном */
+.hero .poke{display:none}
+.bahead{
+  font-family:'Unbounded',sans-serif;font-weight:800;text-transform:uppercase;
+  font-size:clamp(20px,2.4vw,34px);line-height:1.15;text-align:center;
+  margin:0 0 24px;letter-spacing:-.01em;
+}
+.bahead .hl{
+  display:inline-block;background:var(--orange);color:var(--ink);
+  padding:2px 16px;border-radius:16px;transform:rotate(-1.2deg);
+}
+@media(max-width:900px){
+  .hero .winwrap{width:min(280px,68vw)}
+  .bahead{font-size:clamp(19px,5.2vw,26px);margin-bottom:20px}
+  .bahead .hl{padding:2px 12px;border-radius:13px}
+}
+@media(max-width:600px){
+  .hero .window{border-radius:22px;box-shadow:0 0 0 6px var(--bg), 0 0 0 8px var(--ink), 8px 8px 0 rgba(216,140,154,.45)}
+}
+</style>
 </head>
 <body>
+<div class="ticker">
+  <div class="ticker__row">
+    <span class="tk__set"><b class="tk__name">Real FaceApp Makeup</b><i>✦</i><b>Старт завтра, <span class="deal-date">…</span></b><i>✦</i><b>Гарантія результату</b><i>✦</i><b>Техніка, яку повторить кожна</b><i>✦</i></span>
+    <span class="tk__set"><b class="tk__name">Real FaceApp Makeup</b><i>✦</i><b>Старт завтра, <span class="deal-date">…</span></b><i>✦</i><b>Гарантія результату</b><i>✦</i><b>Техніка, яку повторить кожна</b><i>✦</i></span>
+    <span class="tk__set"><b class="tk__name">Real FaceApp Makeup</b><i>✦</i><b>Старт завтра, <span class="deal-date">…</span></b><i>✦</i><b>Гарантія результату</b><i>✦</i><b>Техніка, яку повторить кожна</b><i>✦</i></span>
+    <span class="tk__set"><b class="tk__name">Real FaceApp Makeup</b><i>✦</i><b>Старт завтра, <span class="deal-date">…</span></b><i>✦</i><b>Гарантія результату</b><i>✦</i><b>Техніка, яку повторить кожна</b><i>✦</i></span>
+    <span class="tk__set"><b class="tk__name">Real FaceApp Makeup</b><i>✦</i><b>Старт завтра, <span class="deal-date">…</span></b><i>✦</i><b>Гарантія результату</b><i>✦</i><b>Техніка, яку повторить кожна</b><i>✦</i></span>
+    <span class="tk__set"><b class="tk__name">Real FaceApp Makeup</b><i>✦</i><b>Старт завтра, <span class="deal-date">…</span></b><i>✦</i><b>Гарантія результату</b><i>✦</i><b>Техніка, яку повторить кожна</b><i>✦</i></span>
+  </div>
+</div>
 
 <!-- ШАПКА (прилипает при скролле) -->
 <header class="topbar">
@@ -1313,22 +1657,42 @@ h2 .hl{
 <!-- ЭКРАН 1 — ПЕРВЫЙ ЭКРАН -->
 <section class="hero">
   <div class="wrap">
-    <h1>Навчись робити простий, але ефектний макіяж, який виглядає <span class="hl">дорого</span> — як після <span class="type-wrap"><span class="type-ghost">FaceApp<img class="type-logo" src="/img/faceapp.png" alt=""></span><span class="type-live"><span class="out" id="typed"></span><img class="type-logo" id="typelogo" src="/img/faceapp.png" alt="FaceApp"><span class="caret"></span></span></span></h1>
+    <div class="fold">
+    <h1>Навчись простому макіяжу, який виглядає <span class="hl">дорого</span> <span class="h1end">— як після <span class="type-wrap"><span class="type-ghost">FaceApp<img class="type-logo" src="/img/faceapp.png" alt=""></span><span class="type-live"><span class="out" id="typed"></span><img class="type-logo" id="typelogo" src="/img/faceapp.png" alt="FaceApp"><span class="caret"></span></span></span></span></h1>
 
     <div class="hero__main">
-      <div class="cell"><span class="tick">✔</span> Макіяж на кожен день і будь-яку подію</div>
-      <div class="cell"><span class="tick">✔</span> Ідеальна шкіра й тон без відчуття маски</div>
-      <div class="cell"><span class="tick">✔</span> Гладенька шкіра як після ретуші, ідеальний результат і дорогий макіяж</div>
+      <div class="cell"><span class="tick">✔</span> Макіяж на кожен день</div>
+      <div class="cell"><span class="tick">✔</span> Шкіра без відчуття маски</div>
+      <div class="cell"><span class="tick">✔</span> Ефект ретуші без фільтрів</div>
       <a class="btn" href="https://secure.wayforpay.com/button/b868961aa0dda">Отримати доступ →</a>
       <div class="cell cell--price">
-        <span class="price__old">2890 грн</span>
-        <span class="price__new">490 грн</span>
+        <span class="price__row"><span class="price__new">490 грн</span><span class="price__old">2890 грн</span></span>
         <span class="price__note">доступ 2 місяці · уроки в записі</span>
-        <span class="price__timer"><span class="hg">⏳</span> акція до <span class="dd deal-date">…</span> <b class="timer-num">…</b></span>
+        <span class="price__extra"><span class="bn">🎁 <b>Бонус при оплаті <em>сьогодні</em></b> — урок «Сяюче декольте», секрет візажиста</span></span>
+        <span class="price__timer"><span class="hg">⏳</span> акція до <span class="dd deal-date">…</span> <span class="seatbox"><svg class="seatring" viewBox="0 0 36 36" aria-hidden="true"><circle class="sr-bg" cx="18" cy="18" r="15.5"></circle><circle class="sr-fg" cx="18" cy="18" r="15.5"></circle></svg><span class="seattxt"><b class="seatnum">3</b> з 10 місць</span></span> <b class="timer-num">…</b></span>
+      </div>    </div>
+
+    <div class="hero2pic">
+      <span class="hero2pic__tag">результат практикуму</span>
+      <div class="hero2pic__frame">
+        <img src="/img/work-2.png" alt="Результат практикуму — нюдовий макіяж">
+      </div>
+      <div class="author">
+        <span class="author__ava"><img src="/img/vlada.png" alt="Владлена Заведенко"></span>
+        <span class="author__txt">
+          <b>Владлена Заведенко</b>
+          <i>візажист · авторка практикуму</i>
+        </span>
+      </div>
+    </div>
+
+      <div class="hero__bottom">
+        <span><span class="dot">●</span> Доступ відкривається одразу після оплати</span>
       </div>
     </div>
 
     <div class="castle">
+      <h2 class="bahead">Макіяж, якому ти <span class="hl">навчишся</span></h2>
       <div class="fort">
         <div class="wall wall--l brick">
           <div class="battlement"><i></i><i></i><i></i></div>
@@ -1337,7 +1701,13 @@ h2 .hl{
           <div class="battlement"><i></i><i></i><i></i><i></i><i></i></div>
           <div class="winwrap">
             <div class="window">
-              <img src="/img/vlada.png" alt="Влада — візажист, авторка практикуму «Real FaceApp Makeup»">
+              <div class="ba" id="ba">
+                <img class="ba__img" src="/img/ba-posle.jpg" alt="Макіяж після практикуму">
+                <img class="ba__img ba__do" src="/img/ba-do.jpg" alt="Обличчя до макіяжу">
+                <span class="ba__tag ba__tag--l">до</span>
+                <span class="ba__tag ba__tag--r">після</span>
+                <div class="ba__line"><span class="ba__knob"></span></div>
+              </div>
               <div class="shutters">
                 <div class="door door--l"></div>
                 <div class="door door--r"></div>
@@ -1377,9 +1747,7 @@ h2 .hl{
       </div>
     </div>
 
-    <div class="hero__bottom">
-      <span><span class="dot">●</span> Доступ відкривається одразу після оплати</span>
-    </div>
+
   </div>
 </section>
 
@@ -1867,7 +2235,7 @@ h2 .hl{
 <script>
 (function(){
   const lb = document.getElementById('lightbox');
-  const openers = [document.querySelector('.window'), document.getElementById('poke')];
+  const openers = [];   /* окно занято слайдером до/после */
   const lbImg = lb.querySelector('img');
   openers.forEach(el => el && el.addEventListener('click', () => {
     lbImg.src = 'img/vlada.png';
@@ -2189,5 +2557,170 @@ document.querySelectorAll('a[href*="wayforpay.com"]').forEach(function(link){
 })();
 </script>
 
+<div class="stickycta">
+  <span class="seatbox seatbox--bar">
+    <svg class="seatring" viewBox="0 0 36 36" aria-hidden="true"><circle class="sr-bg" cx="18" cy="18" r="15.5"></circle><circle class="sr-fg" cx="18" cy="18" r="15.5"></circle></svg>
+    <span class="seattxt"><b class="seatnum">3</b> з 10 місць</span>
+  </span>
+  <a class="stickycta__btn" href="https://secure.wayforpay.com/button/b868961aa0dda">Отримати доступ <b>−83%</b></a>
+</div>
+<div class="joinpop" id="joinpop">
+  <span class="joinpop__ava"></span>
+  <span class="joinpop__txt"><b></b> <span class="jp-tail">приєдналася до практикуму</span></span>
+  <button class="joinpop__x" type="button" aria-label="Закрити сповіщення">×</button>
+</div>
+<script>
+/* Места и уведомления о присоединившихся.
+   Счётчик держим в sessionStorage: при возврате на страницу он не отматывается
+   назад. Имена — в localStorage, чтобы при повторном заходе шли новые. */
+(function(){
+  var boxes = document.querySelectorAll('.seatbox');
+  var pop   = document.getElementById('joinpop');
+  if(!boxes.length) return;
+
+  var TOTAL = 10, R = 15.5, C = 2 * Math.PI * R;
+  var left = 3;
+
+  /* ?reset=1 в адресе очищает память вкладки — иначе при проверках счётчик
+     остаётся на прошлом значении и уведомления больше не приходят */
+  if(location.search.indexOf('reset=1') > -1){
+    try{ sessionStorage.removeItem('seatsLeft'); localStorage.removeItem('joinNames'); }catch(e){}
+  }
+
+  try{
+    var saved = parseInt(sessionStorage.getItem('seatsLeft'), 10);
+    if(saved >= 1 && saved <= left){ left = saved; }
+  }catch(e){}
+
+  function paint(){
+    boxes.forEach(function(box){
+      var ring = box.querySelector('.sr-fg');
+      var num  = box.querySelector('.seatnum');
+      ring.style.strokeDasharray  = C;
+      ring.style.strokeDashoffset = C * (1 - (TOTAL - left) / TOTAL);
+      num.textContent = left;
+      box.classList.toggle('is-warn', left === 2);
+      box.classList.toggle('is-hot',  left <= 1);
+    });
+    try{ sessionStorage.setItem('seatsLeft', left); }catch(e){}
+  }
+  paint();
+
+  var NAMES = ['Альона','Анна','Марина','Оксана','Ірина','Юлія','Катерина','Наталія','Ольга','Вікторія',
+               'Дарина','Поліна','Софія','Крістіна','Аліна','Марія','Олена','Тетяна','Людмила','Валерія',
+               'Настя','Вероніка','Діана','Карина','Ліза','Мілана','Ніна','Світлана','Тамара','Уляна',
+               'Яна','Жанна','Інна','Лариса','Люба','Надія','Галина','Євгенія','Ксенія','Маргарита',
+               'Олеся','Регіна','Сніжана','Ельвіра','Ангеліна','Богдана','Соломія','Христина','Мирослава','Ярослава'];
+
+  function pickName(){
+    var used = [];
+    try{ used = JSON.parse(localStorage.getItem('joinNames') || '[]'); }catch(e){}
+    var free = NAMES.filter(function(n){ return used.indexOf(n) === -1; });
+    if(!free.length){ free = NAMES.slice(); used = []; }   // пул кончился — начинаем круг заново
+    var name = free[Math.floor(Math.random() * free.length)];
+    used.push(name);
+    try{ localStorage.setItem('joinNames', JSON.stringify(used)); }catch(e){}
+    return name;
+  }
+
+  /* крестик убирает только текущее уведомление — следующее придёт как обычно */
+  if(pop){
+    pop.querySelector('.joinpop__x').addEventListener('click', function(){
+      pop.classList.remove('is-on');
+    });
+  }
+
+  function showPop(name, willBeLast){
+    if(!pop) return;
+    pop.querySelector('.joinpop__ava').textContent = name.charAt(0);
+    pop.querySelector('.joinpop__txt b').textContent = name;
+    /* последнее уведомление называет остаток прямо — иначе переход на одно
+       место ничем не отличается от предыдущих и проходит незамеченным */
+    pop.querySelector('.jp-tail').textContent =
+      willBeLast ? 'приєдналася — залишилося 1 місце' : 'приєдналася до практикуму';
+    pop.classList.add('is-on');
+    setTimeout(function(){ pop.classList.remove('is-on'); }, willBeLast ? 7000 : 5200);
+  }
+
+  /* каждое уведомление забирает одно место — иначе цифра и события разойдутся */
+  /* пауза короче прежней: за 30–45 секунд человек успевает пролистать вниз,
+     и уведомление проходит мимо экрана */
+  function step(delay){
+    if(left <= 1) return;
+    setTimeout(function(){
+      showPop(pickName(), left === 2);   // после этого останется одно место
+      left--; paint();
+      step(16000 + Math.random() * 9000);
+    }, delay);
+  }
+  step(8000);
+})();
+
+/* нижнюю панель показываем, только когда кнопка первого экрана ушла из виду */
+(function(){
+  var bar = document.querySelector('.stickycta');
+  var btn = document.querySelector('.hero .btn');
+  if(!bar) return;
+  if(!btn){ bar.classList.add('is-on'); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ bar.classList.toggle('is-on', !en.isIntersecting); });
+  }, {threshold:0});
+  io.observe(btn);
+})();
+</script>
+<script>
+/* перетаскивание шторки: и мышью, и пальцем */
+(function(){
+  var ba = document.getElementById('ba');
+  if(!ba) return;
+  var doImg = ba.querySelector('.ba__do');
+  var line  = ba.querySelector('.ba__line');
+  var dragging = false;
+
+  function setAt(clientX){
+    var r = ba.getBoundingClientRect();
+    var p = (clientX - r.left) / r.width * 100;
+    p = Math.max(0, Math.min(100, p));
+    doImg.style.clipPath = 'inset(0 ' + (100 - p) + '% 0 0)';
+    line.style.left = p + '%';
+  }
+  ba.addEventListener('pointerdown', function(e){
+    e.preventDefault();          // гасим родное перетаскивание картинки
+    dragging = true;
+    setAt(e.clientX);
+    try{ ba.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  /* слушаем на документе, а не только на блоке: если курсор ушёл за пределы
+     кадра, перетаскивание должно продолжаться, а не обрываться */
+  document.addEventListener('pointermove', function(e){ if(dragging) setAt(e.clientX); });
+  ['pointerup','pointercancel'].forEach(function(ev){
+    document.addEventListener(ev, function(){ dragging = false; });
+  });
+  ba.addEventListener('dragstart', function(e){ e.preventDefault(); });
+  ba.addEventListener('click', function(e){ e.stopPropagation(); });
+
+  /* подсказка при первом появлении: шторка сама проезжает туда-обратно,
+     иначе половина людей не понимает, что картинку можно тянуть */
+  var shown = false;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting || shown) return;
+      shown = true;
+      var t0 = null;
+      function hint(ts){
+        if(!t0) t0 = ts;
+        var k = (ts - t0) / 1400;
+        if(k >= 1){ doImg.style.clipPath = 'inset(0 50% 0 0)'; line.style.left = '50%'; return; }
+        var p = 50 + Math.sin(k * Math.PI * 2) * 26;
+        doImg.style.clipPath = 'inset(0 ' + (100 - p) + '% 0 0)';
+        line.style.left = p + '%';
+        requestAnimationFrame(hint);
+      }
+      requestAnimationFrame(hint);   /* без задержки — сразу как блок попал в экран */
+    });
+  }, {threshold:.4});
+  io.observe(ba);
+})();
+</script>
 </body>
 </html>
