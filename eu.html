@@ -1562,7 +1562,9 @@ body{padding-bottom:82px}
 /* ===== ДО / ПОСЛЕ ===== */
 /* Снимки заранее совмещены по глазам, поэтому обе картинки лежат стопкой
    и «до» просто подрезается по вертикали шторкой — лицо не смещается. */
-.ba{position:absolute;inset:0;overflow:hidden;touch-action:none;cursor:ew-resize;z-index:1}
+/* pan-y, а не none: иначе палец на слайдере блокирует прокрутку страницы —
+   человек упирается в кадр и не может листать дальше */
+.ba{position:absolute;inset:0;overflow:hidden;touch-action:pan-y;cursor:ew-resize;z-index:1}
 .window .ba__img{
   position:absolute;left:0;top:0;transform:none;
   width:100%;height:100%;object-fit:cover;display:block;
@@ -2680,17 +2682,35 @@ document.querySelectorAll('a[href*="wayforpay.com"]').forEach(function(link){
     doImg.style.clipPath = 'inset(0 ' + (100 - p) + '% 0 0)';
     line.style.left = p + '%';
   }
+  /* На пальце решаем по направлению первого движения: ведёт вбок — тянем
+     шторку, ведёт вверх-вниз — отдаём жест странице и больше не вмешиваемся.
+     Мышью тянем сразу, там прокрутке ничего не мешает. */
+  var pending = false, sx = 0, sy = 0;
   ba.addEventListener('pointerdown', function(e){
-    e.preventDefault();          // гасим родное перетаскивание картинки
-    dragging = true;
-    setAt(e.clientX);
-    try{ ba.setPointerCapture(e.pointerId); }catch(err){}
+    sx = e.clientX; sy = e.clientY;
+    if(e.pointerType === 'mouse'){
+      e.preventDefault();        // гасим родное перетаскивание картинки
+      dragging = true;
+      setAt(e.clientX);
+      try{ ba.setPointerCapture(e.pointerId); }catch(err){}
+    } else {
+      pending = true;            // ждём, куда поведут
+    }
   });
   /* слушаем на документе, а не только на блоке: если курсор ушёл за пределы
      кадра, перетаскивание должно продолжаться, а не обрываться */
-  document.addEventListener('pointermove', function(e){ if(dragging) setAt(e.clientX); });
+  document.addEventListener('pointermove', function(e){
+    if(pending){
+      var dx = Math.abs(e.clientX - sx), dy = Math.abs(e.clientY - sy);
+      if(dx < 6 && dy < 6) return;              // ещё непонятно
+      pending = false;
+      if(dx > dy){ dragging = true; try{ ba.setPointerCapture(e.pointerId); }catch(err){} }
+      else return;                              // жест вертикальный — это прокрутка
+    }
+    if(dragging) setAt(e.clientX);
+  });
   ['pointerup','pointercancel'].forEach(function(ev){
-    document.addEventListener(ev, function(){ dragging = false; });
+    document.addEventListener(ev, function(){ dragging = false; pending = false; });
   });
   ba.addEventListener('dragstart', function(e){ e.preventDefault(); });
   ba.addEventListener('click', function(e){ e.stopPropagation(); });
