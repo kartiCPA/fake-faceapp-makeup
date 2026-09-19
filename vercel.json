@@ -2,6 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/", "destination": "/ua", "permanent": false }
+    { "source": "/", "destination": "/pl", "permanent": false }
   ]
 }
