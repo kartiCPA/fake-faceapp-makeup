@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>No i gotowe, królowo — dostęp otwarty</title>
+<title>Płatność przyjęta — dziękuję za zapis</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 fbq('init', '27689391037419327');
 fbq('track', 'PageView');
 
-/* Покупка — 11 USD. Засчитывается один раз за сессию: страницу можно обновить
+/* Покупка — 49 PLN. Засчитывается один раз за сессию: страницу можно обновить
    или вернуться на неё из истории, и без защиты Meta посчитала бы это новой продажей. */
 (function(){
   var fired = false;
@@ -58,7 +58,7 @@ src="https://www.facebook.com/tr?id=27689391037419327&ev=PageView&noscript=1"
   gtag('config', 'G-YGSJGV11G3',
        location.search.indexOf('debug=1') > -1 ? {debug_mode: true} : {});
 
-  /* Покупка — 11 USD. Номер заказа выдаётся один раз и лежит в localStorage:
+  /* Покупка — 49 PLN. Номер заказа выдаётся один раз и лежит в localStorage:
      он переживает закрытие браузера, поэтому возврат на эту страницу через день
      (из истории или по ссылке из бота) уже не создаёт вторую продажу.
      Раньше флаг хранился в sessionStorage и стирался вместе со вкладкой —
@@ -226,14 +226,13 @@ h1 .hl{display:inline-block;background:var(--orange);color:var(--ink);padding:2p
     </div>
   </div>
 
-  <h1>No i gotowe, <span class="hl">królowo</span></h1>
-  <p class="sub">Płatność przeszła — <b>dostęp jest twój</b>. Wrota otwarte.</p>
+  <h1>Płatność <span class="hl">przyjęta</span></h1>
+  <p class="sub">Dziękuję! <b>Twoje miejsce jest zarezerwowane.</b></p>
 
   <div class="card">
-    <span class="card__label"><span class="sp">✦</span> Następny krok</span>
-    <p>Dołącz do mojego bota — <b>całe szkolenie będzie tam</b>: lekcje, bonus i wszystko, co przyda się po drodze.</p>
-    <a class="btn" href="https://telegram.me/real_faceapp_makeup_bot?start=ZGw6MzM4MzA5" id="joinbtn">Dołącz →</a>
-    <p class="hint">Już niedługo <em>startujemy</em> ✨</p>
+    <span class="card__label"><span class="sp">✦</span> Co dalej</span>
+    <p>Na adres e-mail podany przy płatności dostaniesz potwierdzenie zapisu. <b>27 września</b> na ten sam adres wyślę dostęp do lekcji wideo.</p>
+    <p class="hint">Zajrzyj też do folderu <em>spam</em> ✨</p>
   </div>
 </main>
 
